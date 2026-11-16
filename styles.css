@@ -345,14 +345,14 @@ footer kbd{border:1px solid var(--line2);border-radius:5px;padding:1px 6px;font-
 }
 @media (max-width:640px){ .brand h1{font-size:15.5px} .brand p{display:none} header.top{padding:10px 12px} .btn{padding:0 10px} }
 /* ==== embedded Myanmar fonts (V2.1, full WOFF2, no subsetting) ==== */
-@font-face{font-family:'Myanmar Black';src:url('/fonts/myanmar-black.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Myanmar Njaun';src:url('/fonts/myanmar-njaun.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Myanmar Pauklay';src:url('/fonts/myanmar-pauklay.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Myanmar Angoun';src:url('/fonts/myanmar-angoun.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Myanmar Gantgaw';src:url('/fonts/myanmar-gantgaw.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Myanmar Thuriya';src:url('/fonts/myanmar-thuriya.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Myanmar Waso';src:url('/fonts/myanmar-waso.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Myanmar Yinmar';src:url('/fonts/myanmar-yinmar.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Myanmar Sagar';src:url('/fonts/myanmar-sagar.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'Pangram';src:url('/fonts/pangram-my.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+1000-109F}@font-face{font-family:'Pangram';src:url('/fonts/pangram-rest.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0000-0FFF,U+10A0-10FF,U+1100-FFFF}
-@font-face{font-family:'Myanmar Yein';src:url('/fonts/myanmar-yein-my.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+1000-109F}@font-face{font-family:'Myanmar Yein';src:url('/fonts/myanmar-yein-rest.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0000-0FFF,U+10A0-10FF,U+1100-FFFF}
+@font-face{font-family:'Myanmar Black';src:url('fonts/myanmar-black.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Myanmar Njaun';src:url('fonts/myanmar-njaun.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Myanmar Pauklay';src:url('fonts/myanmar-pauklay.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Myanmar Angoun';src:url('fonts/myanmar-angoun.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Myanmar Gantgaw';src:url('fonts/myanmar-gantgaw.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Myanmar Thuriya';src:url('fonts/myanmar-thuriya.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Myanmar Waso';src:url('fonts/myanmar-waso.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Myanmar Yinmar';src:url('fonts/myanmar-yinmar.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Myanmar Sagar';src:url('fonts/myanmar-sagar.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Pangram';src:url('fonts/pangram-my.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+1000-109F}@font-face{font-family:'Pangram';src:url('fonts/pangram-rest.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0000-0FFF,U+10A0-10FF,U+1100-FFFF}
+@font-face{font-family:'Myanmar Yein';src:url('fonts/myanmar-yein-my.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+1000-109F}@font-face{font-family:'Myanmar Yein';src:url('fonts/myanmar-yein-rest.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0000-0FFF,U+10A0-10FF,U+1100-FFFF}
