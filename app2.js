@@ -150,30 +150,22 @@ async function startOfflineMP4(){
   }
   setCanvasSize(state.exportRes);
   const W=cv.width,H=cv.height,fps=30;
-  const vCodecs=state.exportRes>=1080?['avc1.640028','avc1.4d0028','avc1.420028']:['avc1.64001f','avc1.4d001f','avc1.42001f'];
-  let vCodec=null;
-  for(const c of vCodecs){
-    try{const s=await VideoEncoder.isConfigSupported({codec:c,width:W,height:H,bitrate:videoBitrate(),framerate:fps});
-      if(s.supported){vCodec=c;break;}}catch(e){}
-  }
-  if(!vCodec)throw new Error('no avc');
-  const aCfg={codec:'mp4a.40.2',sampleRate:sr,numberOfChannels:ch,bitrate:192000};
-  let aOk=false;
-  try{aOk=(await AudioEncoder.isConfigSupported(aCfg)).supported;}catch(e){}
-  if(!aOk)throw new Error('no aac');
+  const pick=await pickExportCodecs(sr,ch);
+  if(!pick)throw new Error('no codecs');
+  const vCodec=pick.v,vKind=pick.vKind,aCfg=pick.aCfg,aKind=pick.aKind;
 
   state.recording=true;recMode='offline';recCancelled=false;visWarned=false;
   setLock(true);
-  openModal('MP4 • H.264 + AAC • အမြန် Encode','MP4 ဗီဒီယို ဖန်တီးနေပါသည်…',
+  openModal('MP4 • '+(vKind==='avc'?'H.264':'VP9')+' + '+(aKind==='aac'?'AAC':'Opus')+' • အမြန် Encode','MP4 ဗီဒီယို ဖန်တီးနေပါသည်…',
     'အသံအရှည်ထက် မြန်အောင် frame များကို တိုက်ရိုက် encode လုပ်နေသည်',
-    'ဤတက်ဘ်ကို ဖွင့်ထားပါ။ မူရင်းအသံ အပြည့်အဝ ပါဝင်ပြီး စာတန်းထိုးများလည်း အချိန်ကိုက် ပါဝင်မည်။');
+    aKind==='opus'?'ဤတက်ဘ်ကို ဖွင့်ထားပါ။ အသံကို Opus ဖြင့် encode ထားသည် — YouTube တွင် အပြည့်အဝ အလုပ်လုပ်သည်၊ ဖုန်း gallery player အချို့တွင် အသံ မကြားရနိုင်ပါ (VLC ဖြင့် ဖွင့်နိုင်သည်)။':'ဤတက်ဘ်ကို ဖွင့်ထားပါ။ မူရင်းအသံ အပြည့်အဝ ပါဝင်ပြီး စာတန်းထိုးများလည်း အချိန်ကိုက် ပါဝင်မည်။');
   setCanvasSize(state.exportRes);
   await nextFrame();
 
   const muxer=new mux.Muxer({
     target:new mux.ArrayBufferTarget(),
-    video:{codec:'avc',width:cv.width,height:cv.height,frameRate:fps},
-    audio:{codec:'aac',sampleRate:sr,numberOfChannels:ch},
+    video:{codec:vKind,width:cv.width,height:cv.height,frameRate:fps},
+    audio:{codec:aKind,sampleRate:sr,numberOfChannels:ch},
     fastStart:'in-memory',
     firstTimestampBehavior:'offset'
   });
@@ -182,8 +174,10 @@ async function startOfflineMP4(){
     output:(chunk,meta)=>muxer.addVideoChunk(chunk,meta),
     error:e=>{encErr=e;}
   });
-  vEnc.configure({codec:vCodec,width:cv.width,height:cv.height,bitrate:videoBitrate(),framerate:fps,
-    latencyMode:'quality',avc:{format:'avc'}});
+  const vCfg={codec:vCodec,width:cv.width,height:cv.height,bitrate:videoBitrate(),framerate:fps,
+    latencyMode:'quality',hardwareAcceleration:'prefer-hardware'};
+  if(vKind==='avc')vCfg.avc={format:'avc'};
+  vEnc.configure(vCfg);
   const aEnc=new AudioEncoder({
     output:(chunk,meta)=>muxer.addAudioChunk(chunk,meta),
     error:e=>{encErr=e;}
@@ -210,7 +204,12 @@ async function startOfflineMP4(){
     $('mSub').textContent='ဗီဒီယို frame များ encode လုပ်နေသည်…';
     /* video */
     const total=Math.max(1,Math.ceil(dur*fps));
+    const t0=performance.now();
     for(let i=0;i<total;i++){
+      if(i===180){
+        const el=(performance.now()-t0)/1000;
+        if(el>(180/fps)*0.95)throw new Error('slow-encoder');
+      }
       if(recCancelled||encErr)throw new Error('abort');
       RC.time=i/fps;
       drawFrame(i/fps,1/fps);
