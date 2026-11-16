@@ -124,6 +124,7 @@ function updateDims(){if(state.aspect==='portrait'){VW=1080;VH=1920;}else{VW=192
 /* ================= canvas & sprites ================= */
 const cv=$('cv'), ctx=cv.getContext('2d',{alpha:false});
 const blurCv=document.createElement('canvas'), bctx=blurCv.getContext('2d');
+let gradCache={key:'',dark:null,vig:null};
 let mote=null, noisePat=null, fallbackBG=null, placeholderSp=null, bgThumbURL='', spThumbURL='';
 let fontsReady=false;
 const grainOff=[[0,0],[53,17],[9,71],[87,43]];let grainIdx=0;
@@ -1080,16 +1081,21 @@ function drawFrame(t,dt){
   ctx.fillStyle=rgba(state.tint,0.28);ctx.fillRect(0,0,W,H);
   ctx.globalCompositeOperation='source-over';
   const dk=mix(state.tint,'#000000',0.5);
-  const g=ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,rgba(dk,state.bgDark*0.55));
-  g.addColorStop(0.55,rgba(dk,state.bgDark*0.45));
-  g.addColorStop(1,rgba(mix(state.tint,'#000000',0.62),Math.min(0.95,state.bgDark*1.25)));
-  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  if(state.vignette>0.02){
-    const vg=ctx.createRadialGradient(W/2,H*0.46,320,W/2,H/2,Math.max(W,H)*0.6);
-    vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(8,4,10,'+(0.75*state.vignette)+')');
-    ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+  const gk=W+'x'+H+'|'+state.tint+'|'+state.bgDark+'|'+state.vignette;
+  if(gradCache.key!==gk){
+    const g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,rgba(dk,state.bgDark*0.55));
+    g.addColorStop(0.55,rgba(dk,state.bgDark*0.45));
+    g.addColorStop(1,rgba(mix(state.tint,'#000000',0.62),Math.min(0.95,state.bgDark*1.25)));
+    let vg=null;
+    if(state.vignette>0.02){
+      vg=ctx.createRadialGradient(W/2,H*0.46,320,W/2,H/2,Math.max(W,H)*0.6);
+      vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(8,4,10,'+(0.75*state.vignette)+')');
+    }
+    gradCache={key:gk,dark:g,vig:vg};
   }
+  ctx.fillStyle=gradCache.dark;ctx.fillRect(0,0,W,H);
+  if(gradCache.vig){ctx.fillStyle=gradCache.vig;ctx.fillRect(0,0,W,H);}
   drawParticles(t,dt);
   if(state.waveStyle!=='ring')drawWaveBottom(t,n);
   drawSpeaker(t,n);
@@ -1245,11 +1251,33 @@ function updateMuteIcons(){
   $('btnMute').title=muted?'အသံ ပြန်ဖွင့်ရန် (M)':'အသံ ပိတ်ရန် (M)';
 }
 function toggleMute(){muted=!muted;applyGain();updateMuteIcons();}
-function updateCodecBadge(){
+async function pickExportCodecs(sr,ch){
+  if(!window.VideoEncoder||!window.AudioEncoder)return null;
+  const vList=state.exportRes>=1080?['avc1.640028','avc1.4d0028','avc1.420028']:['avc1.64001f','avc1.4d001f','avc1.42001f'];
+  vList.push('vp09.00.10.08');
+  let v=null;
+  for(const c of vList){
+    try{const q=await VideoEncoder.isConfigSupported({codec:c,width:1280,height:720,bitrate:videoBitrate(),framerate:30,hardwareAcceleration:'prefer-hardware'});
+      if(q.supported){v=c;break;}}catch(e){}
+  }
+  if(!v)return null;
+  const vKind=v.startsWith('avc1')?'avc':'vp9';
+  const aac={codec:'mp4a.40.2',sampleRate:sr,numberOfChannels:ch,bitrate:192000};
+  try{if((await AudioEncoder.isConfigSupported(aac)).supported)return{v:v,vKind:vKind,aCfg:aac,aKind:'aac'};}catch(e){}
+  const opus={codec:'opus',sampleRate:sr,numberOfChannels:ch,bitrate:128000};
+  try{if((await AudioEncoder.isConfigSupported(opus)).supported)return{v:v,vKind:vKind,aCfg:opus,aKind:'opus'};}catch(e){}
+  return null;
+}
+async function updateCodecBadge(){
   const el=$('codecBadge');if(!el)return;
-  const wc=!!(window.VideoEncoder&&window.AudioEncoder);
-  el.textContent=wc?'✓ WebCodecs ရပါသည် — MP4 အမြန် export ရမည်':'⚠ WebCodecs မရပါ — realtime export သာ ရမည် (Chrome / Edge အသစ် သုံးပါ)';
-  el.style.color=wc?'var(--jade)':'var(--amber)';
+  const pick=await pickExportCodecs(48000,2);
+  if(pick){
+    el.textContent='✓ အမြန် export ရပါသည် ('+(pick.vKind==='avc'?'H.264':'VP9')+' + '+(pick.aKind==='aac'?'AAC':'Opus')+')';
+    el.style.color='var(--jade)';
+  }else{
+    el.textContent='⚠ အမြန် export မရပါ — realtime နည်းသာ ရမည် (Chrome / Edge အသစ် သုံးပါ)';
+    el.style.color='var(--amber)';
+  }
 }
 function syncExportButtons(){
   const has=!!media.audioURL,rec=state.recording;
