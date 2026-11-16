@@ -68,7 +68,7 @@
     <button class="btn btn-ghost iconbtn" id="btnMute" title="အသံ ပိတ်/ဖွင့် (M)" aria-label="အသံ ပိတ်/ဖွင့်">
       <svg class="ic"><use id="muteUseA" href="#i-vol"/></svg>
     </button>
-    <button class="btn btn-gold" id="btnInstall" hidden title="ဖုန်းတွင် App အဖြစ် သွင်းရန်">📲<span class="bl"> Install app</span></button>
+    <button class="btn btn-gold" id="btnInstall" title="App အဖြစ် သွင်းရန်">📲<span class="bl"> Install app</span></button>
     <button class="btn btn-ghost" id="btnThumbTop" title="လက်ရှိမြင်ကွင်းကို Thumbnail PNG အဖြစ် သိမ်းရန်">
       <svg class="ic"><use href="#i-camera"/></svg><span class="bl">Thumbnail</span>
     </button>
@@ -437,9 +437,12 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.s
   let dp=null;const btn=document.getElementById('btnInstall');if(!btn)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
   if(standalone){btn.hidden=true;return;}
-  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;btn.hidden=false;});
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;});
   window.addEventListener('appinstalled',()=>{btn.hidden=true;dp=null;});
-  btn.addEventListener('click',async()=>{if(dp){dp.prompt();try{await dp.userChoice;}catch(e){}dp=null;btn.hidden=true;}});
+  btn.addEventListener('click',async()=>{
+    if(dp){dp.prompt();try{await dp.userChoice;}catch(e){}dp=null;return;}
+    if(window.toast)toast('Chrome address bar ညာဘက်စွန်းက Install icon (သို့) ⋮ menu → "Install app / Add to Home screen" ကို နှိပ်ပါ');
+  });
 })();
 </script>
 </body>
