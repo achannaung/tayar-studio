@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1C0F16">
-<link rel="manifest" href="/manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest">
 <style>@media (max-width:640px){#btnInstall .bl{display:none}}</style>
-<link rel="icon" type="image/png" href="/icon-192.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Noto+Serif+Myanmar:wght@400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -428,11 +428,11 @@
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <audio id="audioEl" preload="auto"></audio>
 
-<script src="/app.js"></script>
-<script src="/app2.js"></script>
+<script src="app.js"></script>
+<script src="app2.js"></script>
 <script>
 /* PWA: service worker + install prompt */
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{});});}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
 (function(){
   let dp=null;const btn=document.getElementById('btnInstall');if(!btn)return;
   const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
